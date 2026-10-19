@@ -26,7 +26,7 @@ Para conocerla sin escribir nada: en Inicio toca **Cargar datos de ejemplo**. De
 | **Registrar café** | 2 pasos, solo lo esencial: productor (nombre, apellido, cédula), finca, departamento y municipio → kg de pergamino, variedad, proceso, tipo y tiempo de fermentación, tipo y tiempo de secado. El análisis físico (con los factores calculados en vivo), la bodega, el precio, la humedad, la vereda y la autorización de datos se completan después con **Editar**. Los cafés nuevos quedan en la primera bodega mientras no se cambie. |
 | **Ficha del café** | Todo lo del café: perfil en taza, cataciones, proceso, análisis físico, movimientos. Se comparte por WhatsApp. |
 | **Catación** | Formato SCA: atributos con − y +, tazas, defectos, descriptores. El puntaje se calcula solo. Cada catador usa su celular. |
-| **Trilla** | Lotes que juntan uno o varios cafés. De cada café se puede sacar solo una parte (por ejemplo, 100 de 200 kg); el resto sigue disponible en inventario para otro lote o una venta. Cada café guarda sus kg originales y muestra los disponibles. La preparación (UGQ o EP) se elige para todo el lote. Calcula el excelso proyectado y, cuando se anota el resultado, el factor real. |
+| **Trilla** | Lotes que juntan uno o varios cafés. De cada café se puede sacar solo una parte (por ejemplo, 100 de 200 kg); el resto sigue disponible en inventario para otro lote o una venta. Cada café guarda sus kg originales y muestra los disponibles. Pestaña **Pasilla**: un solo inventario general donde se mezcla la pasilla de todas las trillas, con sus movimientos y un botón para venderla. La preparación (UGQ o EP) se elige para todo el lote. Calcula el excelso proyectado y, cuando se anota el resultado, el factor real. |
 | **Ventas** | Ventas de pergamino, excelso o pasilla. No deja vender más de lo disponible. |
 | **Ajustes** | Tema claro / oscuro / automático, tamaño de letra, bodegas, exportar a Excel (CSV), respaldo y restauración. |
 
@@ -43,7 +43,8 @@ Para conocerla sin escribir nada: en Inicio toca **Cargar datos de ejemplo**. De
 - **Puntaje de catación** = suma de los 7 atributos + 2 × (uniformidad + taza limpia + dulzura) − defectos
 - **Puntaje de un café o lote** = promedio de sus cataciones. **Perfil** = descriptores de todas las cataciones; los repetidos se marcan con (xN).
 - **Kg disponibles de pergamino** = kg totales − kg enviados a trilla − kg de pergamino vendidos
-- **Kg disponibles de excelso o pasilla** = kg producidos en el lote − kg vendidos
+- **Kg disponibles de excelso** (por lote) = kg producidos en el lote − kg vendidos de ese lote
+- **Pasilla disponible** (inventario general) = pasilla producida en todas las trillas − pasilla vendida
 
 Las fórmulas están en [`js/calc.js`](js/calc.js) y tienen pruebas en [`tests/calc.test.mjs`](tests/calc.test.mjs).
 
@@ -82,6 +83,6 @@ node --test tests/*.test.mjs   # pruebas de las fórmulas
 
 ## Siguientes pasos
 
-1. Confirmar la fórmula del factor EP, el manejo de la pasilla y cómo se nombra un lote que mezcla cafés.
+1. Confirmar la fórmula del factor EP y cómo se nombra un lote que mezcla cafés.
 2. Sincronización en la nube y varios usuarios para la versión empresarial.
 3. Empaquetar para Play Store (por ejemplo, con Capacitor) usando este mismo código.
