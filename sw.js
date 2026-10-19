@@ -1,7 +1,7 @@
 // Service worker: guarda la app en el celular para que abra sin internet.
 // Cada versión se guarda completa y por separado, para que nunca se mezclen archivos de versiones distintas.
 // Para publicar una versión nueva usa: node scripts/version.mjs 0.6.0
-const CACHE = 'datacafe-lab-v0.6.0';
+const CACHE = 'datacafe-lab-v0.7.0';
 const FONTS = 'datacafe-fonts-v1';
 
 const APP = [
@@ -9,6 +9,7 @@ const APP = [
   './js/app.js', './js/version.js', './js/db.js', './js/calc.js', './js/ui.js', './js/model.js', './js/listas.js', './js/seed.js',
   './js/views/inicio.js', './js/views/inventario.js', './js/views/registrar.js', './js/views/ficha.js', './js/views/catacion.js',
   './js/views/trilla.js', './js/views/lote.js', './js/views/ventas.js', './js/views/ajustes.js', './js/views/pendientes.js',
+  './js/pdf.js', './js/reporte-ui.js', './js/vendor/pdf-lib.esm.min.js',
   './icons/favicon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png',
 ];
 

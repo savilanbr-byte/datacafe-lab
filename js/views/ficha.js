@@ -3,6 +3,7 @@ import { data, del } from '../db.js';
 import { cafeInfo, nombreProductor, pendientesDe } from '../model.js';
 import { fmtKg, fmt2, fmtCOP, fmtFecha, precioCarga, num, puntajeCatacion, clasificacion } from '../calc.js';
 import { esc, icon, topbar, toast, go, shareText } from '../ui.js';
+import { htmlReporte, bindReporte } from '../reporte-ui.js';
 
 export async function render(root, { parts }) {
   const id = decodeURIComponent(parts[1] || '');
@@ -99,9 +100,13 @@ export async function render(root, { parts }) {
         ${cafe.comentarios ? `<div class="note mt-sm">${esc(cafe.comentarios)}</div>` : ''}
       </section>
 
+      ${htmlReporte()}
+
       <button class="btn btn-accent btn-lg btn-block" type="button" id="compartir">${icon('share')}Compartir ficha por WhatsApp</button>
       ${tieneMovs ? '' : `<button class="btn btn-danger btn-block" type="button" id="borrar">${icon('trash')}Borrar este café</button>`}
     </div>`;
+
+  bindReporte(root, async (op) => (await import('../pdf.js')).reporteCafe(id, op));
 
   root.querySelector('#compartir').onclick = () => {
     const lineas = [

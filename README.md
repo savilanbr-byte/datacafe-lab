@@ -2,7 +2,7 @@
 
 App para hacer seguimiento a un café en post-cosecha: **inventario de pergamino, catación, trilla y ventas**. Está pensada para productores y comercializadoras, con botones grandes y lenguaje sencillo. **Funciona sin internet.**
 
-Es un prototipo de **Sancocho Glorioso** (versión 0.6.0).
+Es un prototipo de **Sancocho Glorioso** (versión 0.7.0).
 
 👉 **Probar la app:** https://savilanbr-byte.github.io/datacafe-lab/
 
@@ -24,7 +24,7 @@ Para conocerla sin escribir nada: en Inicio toca **Cargar datos de ejemplo**. De
 | **Pendientes** | Cuatro listas que se actualizan solas con los cafés en bodega a los que les falta **análisis físico**, **catación**, **precio** o la **autorización de datos** del productor. Cada café tiene un botón que abre justo lo que le falta y, al guardar, vuelve a la lista. |
 | **Inventario** | Lista de cafés con buscador y filtro por bodega. |
 | **Registrar café** | 2 pasos, solo lo esencial: productor (nombre, apellido, cédula), finca, departamento y municipio → kg de pergamino, variedad, proceso, tipo y tiempo de fermentación, tipo y tiempo de secado. El análisis físico (con los factores calculados en vivo), la bodega, el precio, la humedad, la vereda y la autorización de datos se completan después con **Editar**. Los cafés nuevos quedan en la primera bodega mientras no se cambie. |
-| **Ficha del café** | Todo lo del café: perfil en taza, cataciones, proceso, análisis físico, movimientos. Se comparte por WhatsApp. |
+| **Ficha del café** | Todo lo del café: perfil en taza, cataciones, proceso, análisis físico, movimientos. Se comparte por WhatsApp y genera un **reporte en PDF** (también disponible en cada lote). |
 | **Catación** | Formato SCA: atributos con − y +, tazas, defectos, descriptores. El puntaje se calcula solo. Cada catador usa su celular. |
 | **Trilla** | Lotes que juntan uno o varios cafés. De cada café se puede sacar solo una parte (por ejemplo, 100 de 200 kg); el resto sigue disponible en inventario para otro lote o una venta. Cada café guarda sus kg originales y muestra los disponibles. Pestaña **Pasilla**: un solo inventario general donde se mezcla la pasilla de todas las trillas, con sus movimientos y un botón para venderla. La preparación (UGQ o EP) se elige para todo el lote. Calcula el excelso proyectado y, cuando se anota el resultado, el factor real. |
 | **Ventas** | Ventas de pergamino, excelso o pasilla. No deja vender más de lo disponible. |
@@ -47,6 +47,15 @@ Para conocerla sin escribir nada: en Inicio toca **Cargar datos de ejemplo**. De
 - **Pasilla disponible** (inventario general) = pasilla producida en todas las trillas − pasilla vendida
 
 Las fórmulas están en [`js/calc.js`](js/calc.js) y tienen pruebas en [`tests/calc.test.mjs`](tests/calc.test.mjs).
+
+## Reportes en PDF
+
+En la ficha de cada café y en cada lote hay un botón **Descargar PDF** (y **Compartir PDF** en celulares que lo permiten). El reporte se genera en el mismo equipo, también sin internet.
+
+- **Por defecto** es apto para compartir con compradores: no incluye la cédula del productor, los precios de compra ni los clientes.
+- Marcando **Incluir datos internos** se agregan esos datos.
+
+Los PDF se crean con [pdf-lib](https://github.com/Hopding/pdf-lib) (licencia MIT), incluida en `js/vendor/`.
 
 ## Limitaciones del prototipo
 
