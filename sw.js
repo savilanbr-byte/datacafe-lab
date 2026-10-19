@@ -1,6 +1,7 @@
 // Service worker: guarda la app en el celular para que abra sin internet.
-// Al publicar una versión nueva, cambia CACHE (y VERSION en js/version.js).
-const CACHE = 'datacafe-lab-v0.4.0';
+// Cada versión se guarda completa y por separado, para que nunca se mezclen archivos de versiones distintas.
+// Para publicar una versión nueva usa: node scripts/version.mjs 0.6.0
+const CACHE = 'datacafe-lab-v0.5.0';
 const FONTS = 'datacafe-fonts-v1';
 
 const APP = [
@@ -12,7 +13,8 @@ const APP = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(APP)));
+  // cache: 'reload' obliga a descargar del servidor y no de copias viejas del navegador.
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(APP.map((u) => new Request(u, { cache: 'reload' })))));
 });
 
 self.addEventListener('activate', (e) => {
@@ -41,14 +43,15 @@ self.addEventListener('fetch', (e) => {
   }
   if (url.origin !== self.location.origin) return;
 
-  // Archivos de la app: primero lo guardado; se actualiza en segundo plano.
+  // Archivos de la app: siempre los de esta versión. Las versiones nuevas llegan con un sw.js nuevo
+  // y la app muestra el aviso "Actualizar".
   e.respondWith(caches.open(CACHE).then(async (c) => {
     const hit = await c.match(req, { ignoreSearch: true });
-    const red = fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; }).catch(() => null);
     if (hit) return hit;
-    const res = await red;
-    if (res) return res;
-    if (req.mode === 'navigate') return c.match('./index.html');
-    return Response.error();
+    if (req.mode === 'navigate') {
+      const index = await c.match('./index.html');
+      if (index) return index;
+    }
+    try { return await fetch(req); } catch (err) { return Response.error(); }
   }));
 });

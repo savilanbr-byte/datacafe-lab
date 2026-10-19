@@ -2,7 +2,7 @@
 
 App para hacer seguimiento a un café en post-cosecha: **inventario de pergamino, catación, trilla y ventas**. Está pensada para productores y comercializadoras, con botones grandes y lenguaje sencillo. **Funciona sin internet.**
 
-Es un prototipo de **Sancocho Glorioso** (versión 0.4.0).
+Es un prototipo de **Sancocho Glorioso** (versión 0.5.0).
 
 👉 **Probar la app:** https://savilanbr-byte.github.io/datacafe-lab/
 
@@ -78,7 +78,7 @@ npx serve .           # abre http://localhost:3000
 node --test tests/*.test.mjs   # pruebas de las fórmulas
 ```
 
-**Para publicar una versión nueva**, cambia el número en `js/version.js` y en `CACHE` dentro de `sw.js`. Así los celulares que ya tienen la app instalada descargan la actualización. Luego sube los cambios a la rama `main`.
+**Para publicar una versión nueva**, ejecuta `node scripts/version.mjs 0.6.0` (con el número nuevo) y sube los cambios a la rama `main`. El script actualiza el número en `js/version.js`, `sw.js` e `index.html`. Así los celulares y computadores que ya tienen la app descargan la versión completa y ven el aviso **Actualizar**. Si alguna vez se ve rara justo después de publicar, recarga con **Ctrl + Shift + R** en el computador.
 
 ## Siguientes pasos
 

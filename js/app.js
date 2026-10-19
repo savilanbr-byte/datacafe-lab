@@ -56,7 +56,12 @@ async function init() {
 
 function registerSW() {
   if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
-  navigator.serviceWorker.register('./sw.js').then((reg) => {
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
+    // Si ya hay una versión nueva esperando (por ejemplo, de una visita anterior), ofrece actualizar.
+    if (reg.waiting && navigator.serviceWorker.controller) {
+      toast('Hay una versión nueva de la app.', { label: 'Actualizar', run: () => reg.waiting.postMessage('skipWaiting') });
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
     reg.addEventListener('updatefound', () => {
       const w = reg.installing;
       if (!w) return;
