@@ -2,7 +2,8 @@
 import { data, put, uid } from '../db.js';
 import { ATRIBUTOS, TAZAS, puntajeCatacion, clasificacion, fmt2, fmtFecha, hoyISO, nombreProducto } from '../calc.js';
 import { esc, icon, seg, bindSeg, toast, go, field, textarea } from '../ui.js';
-import { DESCRIPTORES } from '../listas.js';
+import { DESCRIPTORES, DESCRIPTORES_GRUPOS } from '../listas.js';
+import { htmlCombo, montarCombo } from '../combo.js';
 import { cafesOrdenados, lotesOrdenados, nombreReferencia } from '../model.js';
 
 let ultimoCatador = '';
@@ -18,7 +19,8 @@ export async function render(root, { q }) {
     uniformidad: 5, tazaLimpia: 5, dulzura: 5, defectos: 0, descriptores: [], comentarios: '',
   };
   const usados = data.cataciones.flatMap((x) => x.descriptores || []);
-  let opciones = [...new Set([...DESCRIPTORES, ...usados])];
+  const propios = [...new Set(usados)].filter((u) => !DESCRIPTORES.some((d) => d.toLowerCase() === String(u).toLowerCase()));
+  const grupos = propios.length ? [{ grupo: 'Usados antes', items: propios }, ...DESCRIPTORES_GRUPOS] : DESCRIPTORES_GRUPOS;
 
   const volverA = q.get('volver') ? `#/pendientes?lista=${encodeURIComponent(q.get('volver'))}` : null;
   const volver = volverA || (fijo ? (tipo === 'lote' ? `#/lote/${encodeURIComponent(ref)}` : `#/cafe/${encodeURIComponent(ref)}`) : null);
@@ -84,12 +86,7 @@ export async function render(root, { q }) {
 
       <section class="card stack-sm">
         <h2>Descriptores</h2>
-        <div class="chips" id="desc"></div>
-        <div style="display:flex;gap:.5rem">
-          <label class="sr" for="otro-desc">Otro descriptor</label>
-          <input class="input" id="otro-desc" placeholder="Otro descriptor" autocomplete="off">
-          <button type="button" class="btn" id="add-desc">Agregar</button>
-        </div>
+        ${htmlCombo('desc', 'Sabores y aromas', 'Escribe para buscar: fresa, panela, jazmín…', 'Elige todos los que quieras. Si no está en la lista, escríbelo y presiona Enter.')}
         ${textarea('comentarios', 'Comentarios', '')}
       </section>
 
@@ -117,9 +114,6 @@ export async function render(root, { q }) {
       : `<option value="">${tipo === 'lote' ? 'No hay lotes todavía' : 'No hay cafés todavía'}</option>`;
   }
 
-  function pintarDesc() {
-    $('#desc').innerHTML = opciones.map((d) => `<button type="button" class="chip accent" data-d="${esc(d)}" aria-pressed="${c.descriptores.includes(d)}">${esc(d)}</button>`).join('');
-  }
 
   function puntaje() {
     const p = puntajeCatacion(c);
@@ -155,22 +149,8 @@ export async function render(root, { q }) {
       $('#v-def').textContent = String(c.defectos);
       puntaje(); return;
     }
-    const ch = e.target.closest('#desc [data-d]');
-    if (ch) {
-      const x = ch.dataset.d;
-      c.descriptores = c.descriptores.includes(x) ? c.descriptores.filter((y) => y !== x) : [...c.descriptores, x];
-      ch.setAttribute('aria-pressed', String(c.descriptores.includes(x)));
-    }
   });
 
-  $('#add-desc').addEventListener('click', () => {
-    const x = $('#otro-desc').value.trim();
-    if (!x) return;
-    if (!opciones.includes(x)) opciones = [...opciones, x];
-    if (!c.descriptores.includes(x)) c.descriptores.push(x);
-    $('#otro-desc').value = '';
-    pintarDesc();
-  });
 
   $('#form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -185,6 +165,6 @@ export async function render(root, { q }) {
     go(volverA || (tipo === 'lote' ? `#/lote/${encodeURIComponent(ref)}` : `#/cafe/${encodeURIComponent(ref)}`));
   });
 
-  pintarDesc();
+  montarCombo(root, 'desc', { grupos, seleccion: c.descriptores });
   puntaje();
 }

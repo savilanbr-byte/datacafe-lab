@@ -2,7 +2,7 @@
 
 App para hacer seguimiento a un café en post-cosecha: **inventario de pergamino, catación, trilla y ventas**. Está pensada para productores y comercializadoras, con botones grandes y lenguaje sencillo. **Funciona sin internet.**
 
-Es un prototipo de **Sancocho Glorioso** (versión 0.7.0).
+Es un prototipo de **Sancocho Glorioso** (versión 0.8.0).
 
 👉 **Probar la app:** https://savilanbr-byte.github.io/datacafe-lab/
 
@@ -25,7 +25,7 @@ Para conocerla sin escribir nada: en Inicio toca **Cargar datos de ejemplo**. De
 | **Inventario** | Lista de cafés con buscador y filtro por bodega. |
 | **Registrar café** | 2 pasos, solo lo esencial: productor (nombre, apellido, cédula), finca, departamento y municipio → kg de pergamino, variedad, proceso, tipo y tiempo de fermentación, tipo y tiempo de secado. El análisis físico (con los factores calculados en vivo), la bodega, el precio, la humedad, la vereda y la autorización de datos se completan después con **Editar**. Los cafés nuevos quedan en la primera bodega mientras no se cambie. |
 | **Ficha del café** | Todo lo del café: perfil en taza, cataciones, proceso, análisis físico, movimientos. Se comparte por WhatsApp y genera un **reporte en PDF** (también disponible en cada lote). |
-| **Catación** | Formato SCA: atributos con − y +, tazas, defectos, descriptores. El puntaje se calcula solo. Cada catador usa su celular. |
+| **Catación** | Formato SCA: atributos con − y +, tazas, defectos y descriptores elegidos de una lista desplegable de unos 140 sabores y aromas (rueda de sabores SCA y frutas colombianas) que se filtra mientras se escribe; también acepta descriptores propios. El puntaje se calcula solo. Cada catador usa su celular. |
 | **Trilla** | Lotes que juntan uno o varios cafés. De cada café se puede sacar solo una parte (por ejemplo, 100 de 200 kg); el resto sigue disponible en inventario para otro lote o una venta. Cada café guarda sus kg originales y muestra los disponibles. Pestaña **Pasilla**: un solo inventario general donde se mezcla la pasilla de todas las trillas, con sus movimientos y un botón para venderla. La preparación (UGQ o EP) se elige para todo el lote. Calcula el excelso proyectado y, cuando se anota el resultado, el factor real. |
 | **Ventas** | Ventas de pergamino, excelso o pasilla. No deja vender más de lo disponible. |
 | **Ajustes** | Tema claro / oscuro / automático, tamaño de letra, bodegas, exportar a Excel (CSV), respaldo y restauración. |
