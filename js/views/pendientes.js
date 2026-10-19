@@ -9,8 +9,8 @@ export async function render(root, { q }) {
 
   root.innerHTML = `
     ${topbar('Pendientes', '#/inicio')}
-    <p class="sub" style="margin:-.25rem 0 1rem">Cafés en bodega a los que les falta información. Las listas se actualizan solas.</p>
-    ${seg('lista', listas.map((l) => [l.id, `${l.titulo} (${l.cafes.length})`]), actual)}
+    <p class="sub" style="margin:-.25rem 0 1rem">Cafés con kilos en bodega a los que les falta información. Las listas se actualizan solas.</p>
+    ${seg('lista', listas.map((l) => [l.id, `${l.titulo} (${l.cafes.length})`]), actual, 'wrap')}
     <div id="lista" class="stack-sm mt"></div>`;
 
   function pintar() {

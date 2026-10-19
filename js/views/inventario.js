@@ -53,7 +53,7 @@ export async function render(root) {
         </div>
         <div class="item-name">${esc(c.nombre)}</div>
         ${c.disponible > 0.001
-          ? `<div class="item-bar"><div class="bar"><span style="width:${pct}%"></span></div><span><strong>${fmtKg(c.disponible)} kg</strong> de ${fmtKg(total)}</span></div>`
+          ? `<div class="item-bar"><div class="bar"><span style="width:${pct}%"></span></div><span><strong>${fmtKg(c.disponible)}</strong> de ${fmtKg(total)} kg</span></div>`
           : `<div class="small muted">Agotado · se usaron los ${fmtKg(total)} kg</div>`}
       </a>`;
     }).join('');

@@ -14,7 +14,7 @@ export async function cargarEjemplo() {
     ['p-ana', 'Ana', 'Gómez', '12345678'], ['p-luis', 'Luis', 'Ríos', '87654321'], ['p-marta', 'Marta', 'Cárdenas', '11223344'],
     ['p-jorge', 'Jorge', 'Muñoz', '55667788'], ['p-rosa', 'Rosa', 'Imbachí', '99887766'],
   ];
-  for (const [id, nombre, apellido, cedula] of P) await put('productores', { id, nombre, apellido, cedula, autorizacion: true, fechaAutorizacion: d(30) });
+  for (const [id, nombre, apellido, cedula] of P) await put('productores', { id, nombre, apellido, cedula, autorizacion: id !== 'p-marta', fechaAutorizacion: id !== 'p-marta' ? d(30) : null });
 
   const base = { departamento: 'Huila', gramos: 300, comentarios: '' };
   const C = [

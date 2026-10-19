@@ -19,6 +19,9 @@ export async function render(root, { parts }) {
   for (const v of data.ventas) if (v.tipo === 'Pergamino' && v.ref === id) movs.push({ fecha: v.fecha, txt: `Venta a ${v.cliente || 'cliente'}`, kg: -num(v.kg) });
   movs.sort((a, b) => (a.fecha < b.fecha ? -1 : 1));
   const tieneMovs = movs.length > 1;
+  const enTrilla = movs.filter((m) => m.href).reduce((s, m) => s - m.kg, 0);
+  const vendidoPerg = total - c.disponible - enTrilla;
+  const pctUsado = total > 0 ? Math.min(100, (100 * (total - c.disponible)) / total) : 0;
 
   root.innerHTML = `
     ${topbar('Ficha del café', '#/inventario', `<a class="icon-btn boxed" href="#/registrar?id=${encodeURIComponent(id)}" aria-label="Editar café">${icon('edit')}</a>`)}
@@ -38,7 +41,7 @@ export async function render(root, { parts }) {
       })()}
 
       <div class="grid-3">
-        <div class="card" style="padding:.75rem"><div class="small muted">Disponible</div><div class="mid-num" style="font-size:1.375rem">${fmtKg(c.disponible)} kg</div><div class="small muted">de ${fmtKg(total)} kg</div></div>
+        <div class="card" style="padding:.75rem"><div class="small muted">Disponible</div><div class="mid-num" style="font-size:1.375rem">${fmtKg(c.disponible)} kg</div><div class="small muted">de ${fmtKg(total)} kg originales</div></div>
         <div class="card" style="padding:.75rem"><div class="small muted">Puntaje</div><div class="mid-num" style="font-size:1.375rem">${c.puntaje !== null ? fmt2(c.puntaje) : '—'}</div><div class="small muted">${c.cataciones.length} ${c.cataciones.length === 1 ? 'catación' : 'cataciones'}</div></div>
         <div class="card" style="padding:.75rem"><div class="small muted">Bodega</div><div style="font-weight:600;margin-top:.25rem;line-height:1.25">${esc(c.bodega)}</div></div>
       </div>
@@ -84,7 +87,13 @@ export async function render(root, { parts }) {
       </section>`}
 
       <section class="card">
-        <h2 style="margin-bottom:.375rem">Precio y movimientos</h2>
+        <h2 style="margin-bottom:.625rem">Kilos y movimientos</h2>
+        <div class="bar" style="height:.875rem;margin-bottom:.375rem" role="img" aria-label="Disponible ${fmtKg(c.disponible)} de ${fmtKg(total)} kg"><span style="width:${100 - pctUsado}%"></span></div>
+        <div class="row"><span>Kg originales</span><strong>${fmtKg(total)} kg</strong></div>
+        <div class="row"><span>Enviados a trilla</span><span>${fmtKg(enTrilla)} kg</span></div>
+        <div class="row"><span>Vendidos en pergamino</span><span>${fmtKg(vendidoPerg)} kg</span></div>
+        <div class="row"><span>Disponibles</span><strong class="plus">${fmtKg(c.disponible)} kg</strong></div>
+        <div class="divider" style="margin:.5rem 0"></div>
         <div class="row"><span>Precio</span><span>${num(cafe.precioKg) ? `${fmtCOP(num(cafe.precioKg))} /kg · ${fmtCOP(precioCarga(cafe.precioKg))} la carga` : '—'}</span></div>
         ${movs.map((m) => `<div class="row plain"><span>${esc(fmtFecha(m.fecha))} · ${m.href ? `<a href="${m.href}">${esc(m.txt)}</a>` : esc(m.txt)}</span><strong class="${m.kg < 0 ? 'minus' : 'plus'}">${m.kg < 0 ? '−' : '+'}${fmtKg(Math.abs(m.kg))} kg</strong></div>`).join('')}
         ${cafe.comentarios ? `<div class="note mt-sm">${esc(cafe.comentarios)}</div>` : ''}

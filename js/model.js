@@ -70,6 +70,8 @@ export const LISTAS_PENDIENTES = [
     pendiente: (c) => c.cataciones.length === 0, href: (c) => `#/catacion?tipo=pergamino&ref=${encodeURIComponent(c.cafe.id)}` },
   { id: 'precio', titulo: 'Precio', falta: 'Sin precio', accion: 'Poner precio', icono: 'cart',
     pendiente: (c) => !(num(c.cafe.precioKg) > 0), href: (c) => `#/registrar?id=${encodeURIComponent(c.cafe.id)}&paso=4` },
+  { id: 'autorizacion', titulo: 'Autorización', falta: 'Sin autorización de datos', accion: 'Registrar autorización', icono: 'edit',
+    pendiente: (c) => !(c.productor && c.productor.autorizacion), href: (c) => `#/registrar?id=${encodeURIComponent(c.cafe.id)}&paso=4` },
 ];
 
 export function pendientes() {

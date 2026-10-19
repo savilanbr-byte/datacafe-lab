@@ -106,6 +106,11 @@ export async function render(root, { parts }) {
           <div><div class="small muted">Factor ${esc(l.preparacion)}</div><div style="font-size:1.125rem;font-weight:600;padding-bottom:.75rem" id="f-${i}"></div></div>
           <div><div class="small muted">Excelso proy.</div><div style="font-size:1.125rem;font-weight:600;padding-bottom:.75rem" id="p-${i}"></div></div>
         </div>
+        <div class="chips" aria-label="Atajos de kilos">
+          <button type="button" class="chip" data-todo="${i}">Todo (${fmtKg(dispDe(it.cafeId))} kg)</button>
+          <button type="button" class="chip" data-mitad="${i}">La mitad</button>
+        </div>
+        <div class="small muted" id="q-${i}"></div>
         <div class="alert" id="x-${i}" hidden></div>
       </section>`;
     }).join('') : '<p class="note">Agrega los cafés que van a este lote.</p>';
@@ -123,6 +128,8 @@ export async function render(root, { parts }) {
       if (pe) pe.textContent = f ? `${fmt2(proyeccionExcelso(it.kg, f))} kg` : '—';
       const d = dispDe(it.cafeId);
       if (xe) { xe.hidden = !(num(it.kg) > d + 0.001); xe.textContent = `Solo hay ${fmtKg(d)} kg disponibles de este café.`; }
+      const qe = $('#q-' + i);
+      if (qe) qe.textContent = num(it.kg) > 0 && num(it.kg) <= d + 0.001 ? `Quedan ${fmtKg(Math.round((d - num(it.kg)) * 100) / 100)} kg de ${it.cafeId} en bodega.` : '';
     });
     $('#t-kg').textContent = fmtKg(r.kgPergamino);
     $('#t-proy').textContent = fmt2(r.proyeccion);
@@ -143,13 +150,24 @@ export async function render(root, { parts }) {
   });
   form.addEventListener('click', (e) => {
     const q = e.target.closest('[data-quitar]');
-    if (q) { l.items.splice(Number(q.dataset.quitar), 1); pintarItems(); }
+    if (q) { l.items.splice(Number(q.dataset.quitar), 1); pintarItems(); return; }
+    const atajo = e.target.closest('[data-todo],[data-mitad]');
+    if (atajo) {
+      const i = Number(atajo.dataset.todo ?? atajo.dataset.mitad);
+      const d = dispDe(l.items[i].cafeId);
+      const kg = atajo.dataset.todo !== undefined ? d : Math.round((d / 2) * 100) / 100;
+      l.items[i].kg = String(Math.round(kg * 100) / 100);
+      $('#kg-' + i).value = l.items[i].kg;
+      calcular();
+    }
   });
   $('#add').addEventListener('click', () => {
     const cid = $('#add-cafe').value;
     if (!cid) return;
-    l.items.push({ cafeId: cid, kg: String(Math.round(dispDe(cid) * 100) / 100) });
+    l.items.push({ cafeId: cid, kg: '' });
     pintarItems();
+    const inp = $('#kg-' + (l.items.length - 1));
+    if (inp) inp.focus();
   });
 
   form.addEventListener('submit', async (e) => {

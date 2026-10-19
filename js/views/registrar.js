@@ -114,7 +114,7 @@ export async function render(root, { q }) {
     if (paso === 2) {
       const todas = [...new Set([...VARIEDADES, ...v.variedades])];
       return `
-        ${field('kgTotales', 'Kilos de pergamino', v.kgTotales, 'inputmode="decimal" required')}
+        ${field('kgTotales', 'Kilos de pergamino (originales)', v.kgTotales, 'inputmode="decimal" required', existente ? `Disponibles hoy: ${disponibleCafe(existente, data.lotes, data.ventas)} kg. Lo que se saca en trillas o ventas se descuenta solo.` : 'Los kilos que entran. Lo que se saque después en trillas o ventas se descuenta solo.')}
         <div class="field"><div class="label">Variedad <span class="muted" style="font-weight:400">(puedes elegir varias)</span></div>
           <div class="chips" id="vars">${todas.map((x) => `<button type="button" class="chip" data-v="${esc(x)}" aria-pressed="${v.variedades.includes(x)}">${esc(x)}</button>`).join('')}</div>
           <div style="display:flex;gap:.5rem;margin-top:.625rem">
