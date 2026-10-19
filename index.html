@@ -56,11 +56,16 @@
   <main id="app" tabindex="-1"></main>
 
   <nav class="nav" id="nav" aria-label="Menú principal">
+    <div class="nav-brand desk"><span>DataCafe<span class="pipe">|</span></span><span class="lab">Laboratorio</span></div>
     <a href="#/inicio" data-tab="inicio"><svg class="ic"><use href="#i-home"/></svg><span>Inicio</span></a>
     <a href="#/inventario" data-tab="inventario"><svg class="ic"><use href="#i-box"/></svg><span>Inventario</span></a>
     <a href="#/catacion" data-tab="catacion"><svg class="ic"><use href="#i-cup"/></svg><span>Catación</span></a>
     <a href="#/trilla" data-tab="trilla"><svg class="ic"><use href="#i-funnel"/></svg><span>Trilla</span></a>
     <a href="#/ventas" data-tab="ventas"><svg class="ic"><use href="#i-cart"/></svg><span>Ventas</span></a>
+    <div class="nav-sep desk" role="presentation"></div>
+    <a href="#/pendientes" data-tab="pendientes" class="desk"><svg class="ic"><use href="#i-check"/></svg><span>Pendientes</span></a>
+    <a href="#/ajustes" data-tab="ajustes" class="desk"><svg class="ic"><use href="#i-settings"/></svg><span>Ajustes</span></a>
+    <div class="nav-foot desk"><svg class="ic ic-sm"><use href="#i-phone"/></svg>Datos guardados en este equipo</div>
   </nav>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>

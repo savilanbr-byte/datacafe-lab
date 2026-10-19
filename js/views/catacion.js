@@ -34,7 +34,7 @@ export async function render(root, { q }) {
     ${volver
       ? `<header class="topbar"><a class="icon-btn" href="${volver}" aria-label="Volver">${icon('back')}</a><h1>Nueva catación</h1></header>`
       : `<header class="page-head"><div><h1>Catación</h1><p class="sub">Califica un café o un lote trillado</p></div></header>`}
-    <form id="form" class="stack" novalidate>
+    <form id="form" class="stack flow-2" novalidate>
       <section class="card stack-sm">
         ${fijo
           ? `<div class="small muted">${tipo === 'lote' ? 'Lote trillado' : 'Café en pergamino'} · ${esc(ref)}</div>

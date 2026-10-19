@@ -13,7 +13,7 @@ export async function render(root) {
       <div><h1>Inventario</h1><p class="sub" id="resumen" aria-live="polite"></p></div>
       <a class="icon-btn add" href="#/registrar" aria-label="Registrar café">${icon('plus')}</a>
     </header>
-    <div class="stack-sm">
+    <div class="stack-sm filters-row">
       <div class="search">
         <label class="sr" for="q">Buscar café</label>
         ${icon('search')}
@@ -25,7 +25,7 @@ export async function render(root) {
       </div>
       <label class="check small"><input type="checkbox" id="agotados" ${filtro.agotados ? 'checked' : ''}> Mostrar cafés agotados</label>
     </div>
-    <div class="stack-sm mt" id="lista"></div>`;
+    <div class="stack-sm mt cards-grid" id="lista"></div>`;
 
   const lista = root.querySelector('#lista');
   const resumen = root.querySelector('#resumen');

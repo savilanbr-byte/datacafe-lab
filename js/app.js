@@ -23,8 +23,8 @@ const ROUTES = {
   trilla: [trilla, 'trilla', true],
   lote: [lote, 'trilla', true],
   ventas: [ventas, 'ventas', true],
-  ajustes: [ajustes, 'inicio', true],
-  pendientes: [pendientes, 'inicio', true],
+  ajustes: [ajustes, 'ajustes', true],
+  pendientes: [pendientes, 'pendientes', true],
 };
 
 const app = document.getElementById('app');

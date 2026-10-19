@@ -1,6 +1,6 @@
 // Service worker: guarda la app en el celular para que abra sin internet.
 // Al publicar una versión nueva, cambia CACHE (y VERSION en js/version.js).
-const CACHE = 'datacafe-lab-v0.3.0';
+const CACHE = 'datacafe-lab-v0.4.0';
 const FONTS = 'datacafe-fonts-v1';
 
 const APP = [

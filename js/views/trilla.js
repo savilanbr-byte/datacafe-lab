@@ -10,7 +10,7 @@ export async function render(root) {
       <div><h1>Trilla</h1><p class="sub">Arma lotes y anota lo que salió</p></div>
       <a class="icon-btn add" href="#/lote/nuevo" aria-label="Nuevo lote">${icon('plus')}</a>
     </header>
-    <div class="stack-sm">
+    <div class="stack-sm cards-grid">
       ${lotes.length ? lotes.map((l) => `
         <a class="item" href="#/lote/${encodeURIComponent(l.lote.id)}">
           <div class="item-top">

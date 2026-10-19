@@ -21,7 +21,7 @@ export async function render(root, { parts }) {
 
   root.innerHTML = `
     ${topbar(nuevo ? 'Nuevo lote' : `Lote ${id}`, '#/trilla')}
-    <form id="form" class="stack" novalidate>
+    <form id="form" class="stack flow-2" novalidate>
       <section class="card stack-sm">
         <div class="grid-2">
           ${field('fecha', 'Fecha de trilla', l.fecha, 'type="date"')}

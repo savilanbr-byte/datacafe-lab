@@ -25,8 +25,8 @@ export async function render(root, { parts }) {
 
   root.innerHTML = `
     ${topbar('Ficha del café', '#/inventario', `<a class="icon-btn boxed" href="#/registrar?id=${encodeURIComponent(id)}" aria-label="Editar café">${icon('edit')}</a>`)}
-    <div class="stack">
-      <section class="hero stack-sm" style="gap:.375rem">
+    <div class="stack flow-2">
+      <section class="hero stack-sm span-all" style="gap:.375rem">
         <div class="small" style="opacity:.92">${esc(cafe.id)} · Registrado el ${esc(fmtFecha(cafe.fechaRegistro))}</div>
         <div style="font-family:var(--font-display);font-size:1.45rem;font-weight:600;line-height:1.2">${esc(c.nombre)}</div>
         ${prodTxt ? `<div style="font-size:.9375rem;opacity:.92">${esc(prodTxt)}</div>` : ''}
@@ -34,13 +34,13 @@ export async function render(root, { parts }) {
 
       ${(() => {
         const ps = pendientesDe(c);
-        return ps.length ? `<section class="card stack-sm" style="background:var(--warn-bg);border-color:transparent;color:var(--warn-ink)">
+        return ps.length ? `<section class="card stack-sm span-all" style="background:var(--warn-bg);border-color:transparent;color:var(--warn-ink)">
           <h2 style="font-size:1.125rem">Le falta información</h2>
           <div class="chips">${ps.map((l) => `<a class="chip" style="text-decoration:none" href="${l.href(c)}">${icon(l.icono, 'ic-sm')}${esc(l.accion)}</a>`).join('')}</div>
         </section>` : '';
       })()}
 
-      <div class="grid-3">
+      <div class="grid-3 span-all">
         <div class="card" style="padding:.75rem"><div class="small muted">Disponible</div><div class="mid-num" style="font-size:1.375rem">${fmtKg(c.disponible)} kg</div><div class="small muted">de ${fmtKg(total)} kg originales</div></div>
         <div class="card" style="padding:.75rem"><div class="small muted">Puntaje</div><div class="mid-num" style="font-size:1.375rem">${c.puntaje !== null ? fmt2(c.puntaje) : '—'}</div><div class="small muted">${c.cataciones.length} ${c.cataciones.length === 1 ? 'catación' : 'cataciones'}</div></div>
         <div class="card" style="padding:.75rem"><div class="small muted">Bodega</div><div style="font-weight:600;margin-top:.25rem;line-height:1.25">${esc(c.bodega)}</div></div>

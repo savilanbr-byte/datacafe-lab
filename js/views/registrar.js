@@ -35,7 +35,7 @@ export async function render(root, { q }) {
   const volver = q.get('volver');
   const salir = volver ? `#/pendientes?lista=${encodeURIComponent(volver)}` : existente ? `#/cafe/${encodeURIComponent(existente.id)}` : '#/inventario';
 
-  root.innerHTML = `
+  root.innerHTML = `<div class="form-narrow">
     <header class="topbar">
       <a class="icon-btn" href="${salir}" id="cancelar" aria-label="Cancelar">${icon('close')}</a>
       <div style="flex:1"><h1>${existente ? 'Editar ' + esc(existente.id) : 'Registrar café'}</h1><div class="small muted" id="paso-txt"></div></div>
@@ -49,7 +49,7 @@ export async function render(root, { q }) {
         <button type="submit" class="btn btn-accent btn-lg grow" id="siguiente">Siguiente</button>
       </div>
       ${existente ? '<button type="button" class="btn btn-green btn-block mt" id="guardar-ya">Guardar cambios</button>' : ''}
-    </form>`;
+    </form></div>`;
 
   const $ = (s) => root.querySelector(s);
   const pasoEl = $('#paso');

@@ -17,6 +17,7 @@ export async function render(root) {
 
   root.innerHTML = `
     <header class="page-head"><div><h1>Ventas</h1><p class="sub">Este mes: ${fmtCOP(totalMes)} · ${fmtKg(kgMes)} kg vendidos</p></div></header>
+    <div class="split">
     <form id="form" class="card stack" novalidate>
       <h2>Nueva venta</h2>
       <div class="field"><div class="label">¿Qué vendes?</div>${seg('tipo', ['Pergamino', 'Excelso', 'Pasilla'], v.tipo)}</div>
@@ -45,7 +46,8 @@ export async function render(root) {
           <strong>${fmtCOP(num(x.kg) * num(x.precioKg))}</strong>
           <button class="icon-btn" type="button" data-del="${esc(x.id)}" aria-label="Borrar venta a ${esc(x.cliente || 'cliente')}">${icon('trash', 'ic-sm')}</button>
         </div>`).join('') : '<p class="empty">Aún no hay ventas.</p>'}
-    </section>`;
+    </section>
+    </div>`;
 
   const $ = (s) => root.querySelector(s);
   let fuentes = [];

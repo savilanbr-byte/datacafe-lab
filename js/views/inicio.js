@@ -41,8 +41,8 @@ export async function render(root) {
   const precio = (label, v, unidad = ' /kg') => `<div><div class="small muted">${label}</div><div style="font-size:1.25rem;font-weight:600">${v ? fmtCOP(v) : '—'}${v && unidad ? `<span class="small muted" style="font-weight:400">${unidad}</span>` : ''}</div></div>`;
 
   root.innerHTML = `${head}
-    <div class="stack">
-      <div><h1 style="font-size:2.125rem">Inicio</h1><p class="sub">Así va tu café hoy</p></div>
+    <div class="stack dash">
+      <div class="full"><h1 style="font-size:2.125rem">Inicio</h1><p class="sub">Así va tu café hoy</p></div>
 
       <a class="hero" href="#/inventario" style="text-decoration:none">
         <div class="label">Pergamino disponible</div>
@@ -50,7 +50,7 @@ export async function render(root) {
         <div class="small" style="opacity:.92">${t.nCafes} ${t.nCafes === 1 ? 'café' : 'cafés'} con kilos en bodega</div>
       </a>
 
-      <div class="grid-2">
+      <div class="grid-2 span-2">
         <a class="card" href="#/trilla" style="text-decoration:none;color:inherit">
           <div class="small muted">Excelso</div>
           <div class="mid-num">${fmtKg(t.excelso)} <small>kg</small></div>
@@ -94,7 +94,7 @@ export async function render(root) {
           <p class="small muted mt-sm">Porcentaje de los kilos de pergamino disponibles.</p>` : '<p class="muted">Sin kilos disponibles.</p>'}
       </section>
 
-      <section class="card">
+      <section class="card span-2">
         <h2 style="margin-bottom:.75rem">Precios promedio</h2>
         <div class="grid-2">
           ${precio('Compra pergamino', p.compra)}

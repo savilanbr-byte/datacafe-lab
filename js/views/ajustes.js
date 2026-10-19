@@ -20,7 +20,7 @@ export async function render(root) {
 
   root.innerHTML = `
     ${topbar('Ajustes', '#/inicio')}
-    <div class="stack">
+    <div class="stack flow-2">
       <section class="card stack">
         <h2>Apariencia</h2>
         <div class="field"><div class="label">Tema</div>${seg('tema', [['light', 'Claro'], ['dark', 'Oscuro'], ['auto', 'Automático']], tema)}
@@ -63,7 +63,7 @@ export async function render(root) {
         <button class="btn btn-danger" type="button" id="borrar">${icon('trash', 'ic-sm')}Borrar toda la información</button>
       </section>
 
-      <p class="small muted center">DataCafe|Laboratorio · versión ${esc(VERSION)} (prototipo)<br>Hecho por Sancocho Glorioso</p>
+      <p class="small muted center span-all">DataCafe|Laboratorio · versión ${esc(VERSION)} (prototipo)<br>Hecho por Sancocho Glorioso</p>
     </div>`;
 
   const $ = (s) => root.querySelector(s);
