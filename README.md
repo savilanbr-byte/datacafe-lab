@@ -2,7 +2,7 @@
 
 App para hacer seguimiento a un café en post-cosecha: **inventario de pergamino, catación, trilla y ventas**. Está pensada para productores y comercializadoras, con botones grandes y lenguaje sencillo. **Funciona sin internet.**
 
-Es un prototipo de **Sancocho Glorioso** (versión 0.5.0).
+Es un prototipo de **Sancocho Glorioso** (versión 0.6.0).
 
 👉 **Probar la app:** https://savilanbr-byte.github.io/datacafe-lab/
 

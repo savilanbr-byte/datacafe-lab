@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   num, factor, excelsoGramos, proyeccionExcelso, precioCarga, puntajeCatacion, promedioPuntaje, perfilTexto,
-  disponibleCafe, resumenLote, disponibleLote, fmtNum, nombreProducto, clasificacion,
+  disponibleCafe, resumenLote, disponibleLote, disponiblePasilla, fmtNum, nombreProducto, clasificacion,
 } from '../js/calc.js';
 
 const cerca = (a, b, tol = 0.01) => assert.ok(Math.abs(a - b) < tol, `${a} ≠ ${b}`);
@@ -84,6 +84,12 @@ test('disponible de excelso y pasilla en un lote', () => {
   const ventas = [{ tipo: 'Excelso', ref: 'L-001', kg: 300 }, { tipo: 'Pasilla', ref: 'L-001', kg: 20 }];
   assert.equal(disponibleLote(lote, ventas, 'Excelso'), 170);
   assert.equal(disponibleLote(lote, ventas, 'Pasilla'), 15);
+});
+
+test('pasilla en un solo inventario general', () => {
+  const lotes = [{ id: 'L-001', kgPasilla: 35 }, { id: 'L-002', kgPasilla: 22 }, { id: 'L-003', kgPasilla: '' }];
+  const ventas = [{ tipo: 'Pasilla', ref: 'PASILLA', kg: 20 }, { tipo: 'Pasilla', ref: 'L-001', kg: 5 }, { tipo: 'Excelso', ref: 'L-001', kg: 300 }];
+  assert.equal(disponiblePasilla(lotes, ventas), 32);
 });
 
 test('formato y nombre del producto', () => {

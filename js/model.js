@@ -1,7 +1,7 @@
 // Vistas derivadas de los datos guardados (lo que la app calcula sola).
 import { data, byId } from './db.js';
 import {
-  num, nombreProducto, disponibleCafe, resumenLote, disponibleLote, promedioPuntaje, perfilTexto, perfil, factor, promedioPonderado,
+  num, nombreProducto, disponibleCafe, resumenLote, disponibleLote, disponiblePasilla, PASILLA_REF, promedioPuntaje, perfilTexto, perfil, factor, promedioPonderado,
 } from './calc.js';
 
 export function productorDe(cafe) {
@@ -49,7 +49,6 @@ export function loteInfo(lote) {
     lote, ...r,
     nombre: lote.nombre ? `${lote.id} · ${lote.nombre}` : lote.id,
     excelsoDisp: disponibleLote(lote, data.ventas, 'Excelso'),
-    pasillaDisp: disponibleLote(lote, data.ventas, 'Pasilla'),
     puntaje: promedioPuntaje(cats),
     perfil: perfil(cats),
     perfilTexto: perfilTexto(cats),
@@ -91,7 +90,7 @@ export function tablero() {
 
   const lotes = data.lotes.map(loteInfo);
   const excelso = lotes.reduce((s, l) => s + Math.max(0, l.excelsoDisp), 0);
-  const pasilla = lotes.reduce((s, l) => s + Math.max(0, l.pasillaDisp), 0);
+  const pasilla = Math.max(0, disponiblePasilla(data.lotes, data.ventas));
 
   const bodegas = data.bodegas.map((b) => ({
     nombre: b.nombre,
@@ -118,7 +117,7 @@ export function tablero() {
   return {
     pergamino, nCafes: conKg.length, excelso, pasilla,
     nLotesExcelso: lotes.filter((l) => l.excelsoDisp > 0.001).length,
-    nLotesPasilla: lotes.filter((l) => l.pasillaDisp > 0.001).length,
+    nLotesPasilla: data.lotes.filter((l) => num(l.kgPasilla) > 0).length,
     bodegas, variedades,
     precios: { compra, carga: compra ? compra * 125 : null, excelso: ventaPor('Excelso'), pasilla: ventaPor('Pasilla'), pergamino: ventaPor('Pergamino') },
     vacio: data.cafes.length === 0,
@@ -131,12 +130,17 @@ export function fuentesVenta(tipo) {
     return cafesOrdenados().map(cafeInfo).filter((c) => c.disponible > 0.001)
       .map((c) => ({ id: c.cafe.id, titulo: `${c.cafe.id} · ${c.cafe.finca}`, sub: nombreProducto(c.cafe), disp: c.disponible, precio: num(c.cafe.precioKg) }));
   }
+  if (tipo === 'Pasilla') {
+    const disp = disponiblePasilla(data.lotes, data.ventas);
+    return disp > 0.001 ? [{ id: PASILLA_REF, titulo: 'Inventario general de pasilla', sub: 'Mezcla de la pasilla de todas las trillas', disp, precio: 0 }] : [];
+  }
   return lotesOrdenados().map(loteInfo)
-    .map((l) => ({ id: l.lote.id, titulo: l.nombre, sub: `${l.lote.preparacion}${l.puntaje ? ' · ' + l.puntaje.toFixed(2).replace('.', ',') + ' puntos' : ''}`, disp: tipo === 'Pasilla' ? l.pasillaDisp : l.excelsoDisp, precio: 0 }))
+    .map((l) => ({ id: l.lote.id, titulo: l.nombre, sub: `${l.lote.preparacion}${l.puntaje ? ' · ' + l.puntaje.toFixed(2).replace('.', ',') + ' puntos' : ''}`, disp: l.excelsoDisp, precio: 0 }))
     .filter((f) => f.disp > 0.001);
 }
 
 export function nombreReferencia(tipo, ref) {
+  if (tipo === 'Pasilla') return 'Pasilla general';
   if (tipo === 'Pergamino') {
     const c = data.cafes.find((x) => x.id === ref);
     return c ? `${c.id} · ${nombreProducto(c)}` : ref;

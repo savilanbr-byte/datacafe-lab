@@ -1,7 +1,7 @@
 // Service worker: guarda la app en el celular para que abra sin internet.
 // Cada versión se guarda completa y por separado, para que nunca se mezclen archivos de versiones distintas.
 // Para publicar una versión nueva usa: node scripts/version.mjs 0.6.0
-const CACHE = 'datacafe-lab-v0.5.0';
+const CACHE = 'datacafe-lab-v0.6.0';
 const FONTS = 'datacafe-fonts-v1';
 
 const APP = [

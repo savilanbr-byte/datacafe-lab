@@ -129,7 +129,15 @@ export function resumenLote(lote, cafesById) {
   };
 }
 
-/** Kg de excelso o pasilla disponibles de un lote = producidos − vendidos. */
+/** Pasilla: un solo inventario general. Entra toda la pasilla de las trillas y salen todas las ventas de pasilla. */
+export const PASILLA_REF = 'PASILLA';
+export function disponiblePasilla(lotes, ventas) {
+  const producida = (lotes || []).reduce((s, l) => s + num(l.kgPasilla), 0);
+  const vendida = (ventas || []).filter((v) => v.tipo === 'Pasilla').reduce((s, v) => s + num(v.kg), 0);
+  return producida - vendida;
+}
+
+/** Kg de excelso disponibles de un lote = producidos − vendidos. */
 export function disponibleLote(lote, ventas, tipo /* 'Excelso' | 'Pasilla' */) {
   const producido = tipo === 'Pasilla' ? num(lote.kgPasilla) : num(lote.kgExcelso);
   const vendido = (ventas || []).filter((v) => v.tipo === tipo && v.ref === lote.id).reduce((s, v) => s + num(v.kg), 0);

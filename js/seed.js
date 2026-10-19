@@ -52,7 +52,7 @@ export async function cargarEjemplo() {
 
   const V = [
     [d(2), 'Excelso', 'L-001', 'Tostadora Ejemplo', 300, 45000],
-    [d(2), 'Pasilla', 'L-001', 'Cliente Ejemplo 2', 20, 9000],
+    [d(2), 'Pasilla', 'PASILLA', 'Cliente Ejemplo 2', 20, 9000],
     [d(3), 'Pergamino', 'C-0002', 'Cliente Ejemplo 3', 50, 24000],
   ];
   for (const [fecha, tipo, ref, cliente, kg, precioKg] of V) await put('ventas', { id: uid('v'), fecha, tipo, ref, cliente, kg, precioKg, comentarios: '' });

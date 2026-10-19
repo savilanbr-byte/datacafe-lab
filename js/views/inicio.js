@@ -56,10 +56,10 @@ export async function render(root) {
           <div class="mid-num">${fmtKg(t.excelso)} <small>kg</small></div>
           <div class="small muted">${t.nLotesExcelso} ${t.nLotesExcelso === 1 ? 'lote' : 'lotes'}</div>
         </a>
-        <a class="card" href="#/trilla" style="text-decoration:none;color:inherit">
+        <a class="card" href="#/trilla?vista=pasilla" style="text-decoration:none;color:inherit">
           <div class="small muted">Pasilla</div>
           <div class="mid-num">${fmtKg(t.pasilla)} <small>kg</small></div>
-          <div class="small muted">${t.nLotesPasilla} ${t.nLotesPasilla === 1 ? 'lote' : 'lotes'}</div>
+          <div class="small muted">Inventario general</div>
         </a>
       </div>
 

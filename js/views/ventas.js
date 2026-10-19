@@ -6,7 +6,9 @@ import { fuentesVenta, nombreReferencia } from '../model.js';
 
 let ultimoTipo = 'Excelso';
 
-export async function render(root) {
+export async function render(root, { q } = {}) {
+  const pedido = q && q.get('tipo');
+  if (['Pergamino', 'Excelso', 'Pasilla'].includes(pedido)) ultimoTipo = pedido;
   const v = { tipo: ultimoTipo, ref: '', cliente: '', kg: '', precioKg: '', fecha: hoyISO(), comentarios: '' };
   const mes = hoyISO().slice(0, 7);
   const delMes = data.ventas.filter((x) => (x.fecha || '').startsWith(mes));
@@ -42,7 +44,7 @@ export async function render(root) {
       ${lista.length ? lista.slice(0, 30).map((x) => `
         <div class="item" style="flex-direction:row;align-items:center;gap:.5rem">
           <div style="flex:1;min-width:0"><div style="font-weight:600">${esc(x.cliente || 'Sin cliente')}</div>
-            <div class="small muted">${esc(fmtFecha(x.fecha))} · ${esc(x.tipo)} ${esc(nombreReferencia(x.tipo, x.ref).split(' · ')[0])} · ${fmtKg(num(x.kg))} kg</div></div>
+            <div class="small muted">${esc(fmtFecha(x.fecha))} · ${x.tipo === 'Pasilla' ? 'Pasilla (inventario general)' : esc(x.tipo) + ' ' + esc(nombreReferencia(x.tipo, x.ref).split(' · ')[0])} · ${fmtKg(num(x.kg))} kg</div></div>
           <strong>${fmtCOP(num(x.kg) * num(x.precioKg))}</strong>
           <button class="icon-btn" type="button" data-del="${esc(x.id)}" aria-label="Borrar venta a ${esc(x.cliente || 'cliente')}">${icon('trash', 'ic-sm')}</button>
         </div>`).join('') : '<p class="empty">Aún no hay ventas.</p>'}

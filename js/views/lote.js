@@ -1,6 +1,6 @@
 // Crear o editar un lote de trilla: cafés que entran, preparación, proyección y resultado real.
 import { data, put, del, nextCode, byId } from '../db.js';
-import { resumenLote, disponibleCafe, nombreProducto, num, fmtKg, fmt2, fmtFecha, hoyISO, puntajeCatacion, factor, proyeccionExcelso } from '../calc.js';
+import { disponiblePasilla, resumenLote, disponibleCafe, nombreProducto, num, fmtKg, fmt2, fmtFecha, hoyISO, puntajeCatacion, factor, proyeccionExcelso } from '../calc.js';
 import { esc, icon, topbar, seg, bindSeg, field, textarea, toast, go } from '../ui.js';
 import { loteInfo, catacionesDe } from '../model.js';
 
@@ -78,7 +78,7 @@ export async function render(root, { parts }) {
           : '<p class="muted">Aún no se ha catado este lote.</p>'}
         <a class="btn btn-outline-green" href="#/catacion?tipo=lote&ref=${encodeURIComponent(id)}">${icon('cup-plain')}Catar este lote</a>
       </section>
-      ${vendido('Excelso') + vendido('Pasilla') > 0 ? '' : `<button type="button" class="btn btn-danger btn-block mt" id="borrar">${icon('trash')}Borrar lote</button>`}` : ''}`;
+      ${vendido('Excelso') > 0 || disponiblePasilla(data.lotes.filter((x) => x.id !== id), data.ventas) < -0.001 ? '' : `<button type="button" class="btn btn-danger btn-block mt" id="borrar">${icon('trash')}Borrar lote</button>`}` : ''}`;
 
   const $ = (s) => root.querySelector(s);
   const form = $('#form');
@@ -181,7 +181,8 @@ export async function render(root, { parts }) {
     const r = resumenLote(l, cafes);
     if (num(l.kgExcelso) > r.kgPergamino) err.push('Los kg de excelso no pueden ser más que los kg de pergamino.');
     if (num(l.kgExcelso) < vendido('Excelso') - 0.001) err.push(`Ya se vendieron ${fmtKg(vendido('Excelso'))} kg de excelso de este lote.`);
-    if (num(l.kgPasilla) < vendido('Pasilla') - 0.001) err.push(`Ya se vendieron ${fmtKg(vendido('Pasilla'))} kg de pasilla de este lote.`);
+    const poolSinEste = disponiblePasilla(data.lotes.filter((x) => !existente || x.id !== existente.id), data.ventas);
+    if (poolSinEste + num(l.kgPasilla) < -0.001) err.push(`Ya se vendió más pasilla de la que quedaría en el inventario general (faltarían ${fmtKg(-(poolSinEste + num(l.kgPasilla)))} kg).`);
     if (err.length) { $('#errores').innerHTML = `<div class="alert" role="alert">${err.map(esc).join('<br>')}</div>`; return; }
     const lid = existente ? existente.id : await nextCode('L', 3);
     await put('lotes', { ...l, id: lid, items: l.items.map((it) => ({ cafeId: it.cafeId, kg: num(it.kg) })) });

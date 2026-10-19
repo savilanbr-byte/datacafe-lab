@@ -163,13 +163,13 @@ function exportar(cual) {
   if (cual === 'trilla') {
     const h = ['Lote', 'Nombre', 'Fecha de trilla', 'Preparación', 'Código café', 'Café', 'Kg pergamino', 'Factor', 'Proyección excelso',
       'Kg pergamino lote', 'Excelso proyectado lote', 'Factor lote', 'Corte', 'Muestra (g)', 'Defectos 1er grupo', 'Defectos 2do grupo', 'Quakers', 'Kg excelso', 'Kg pasilla', 'Factor real',
-      'Kg excelso disponibles', 'Kg pasilla disponibles', 'Puntaje', 'Perfil'];
+      'Kg excelso disponibles', 'Puntaje', 'Perfil'];
     const rows = [];
     for (const l of data.lotes.map(loteInfo)) {
       for (const it of l.items) {
         rows.push([l.lote.id, l.lote.nombre, l.lote.fecha, l.lote.preparacion, it.cafeId, it.cafe ? nombreProducto(it.cafe) : '', num(it.kg), it.factor, it.proyeccion,
           l.kgPergamino, l.proyeccion, l.factorLote, l.lote.corte, num(l.lote.muestraG) || '', num(l.lote.def1) || '', num(l.lote.def2) || '', num(l.lote.quakers) || '',
-          num(l.lote.kgExcelso) || '', num(l.lote.kgPasilla) || '', l.factorReal, l.excelsoDisp, l.pasillaDisp, l.puntaje, l.perfilTexto]);
+          num(l.lote.kgExcelso) || '', num(l.lote.kgPasilla) || '', l.factorReal, l.excelsoDisp, l.puntaje, l.perfilTexto]);
       }
     }
     download(`datacafe-trilla-${f}.csv`, toCSV(h, rows), 'text/csv');
