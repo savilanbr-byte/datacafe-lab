@@ -1,6 +1,6 @@
 // Ficha de un café: todo lo que se sabe de él, sus cataciones y movimientos.
 import { data, del } from '../db.js';
-import { cafeInfo, nombreProductor } from '../model.js';
+import { cafeInfo, nombreProductor, pendientesDe } from '../model.js';
 import { fmtKg, fmt2, fmtCOP, fmtFecha, precioCarga, num, puntajeCatacion, clasificacion } from '../calc.js';
 import { esc, icon, topbar, toast, go, shareText } from '../ui.js';
 
@@ -28,6 +28,14 @@ export async function render(root, { parts }) {
         <div style="font-family:var(--font-display);font-size:1.45rem;font-weight:600;line-height:1.2">${esc(c.nombre)}</div>
         ${prodTxt ? `<div style="font-size:.9375rem;opacity:.92">${esc(prodTxt)}</div>` : ''}
       </section>
+
+      ${(() => {
+        const ps = pendientesDe(c);
+        return ps.length ? `<section class="card stack-sm" style="background:var(--warn-bg);border-color:transparent;color:var(--warn-ink)">
+          <h2 style="font-size:1.125rem">Le falta información</h2>
+          <div class="chips">${ps.map((l) => `<a class="chip" style="text-decoration:none" href="${l.href(c)}">${icon(l.icono, 'ic-sm')}${esc(l.accion)}</a>`).join('')}</div>
+        </section>` : '';
+      })()}
 
       <div class="grid-3">
         <div class="card" style="padding:.75rem"><div class="small muted">Disponible</div><div class="mid-num" style="font-size:1.375rem">${fmtKg(c.disponible)} kg</div><div class="small muted">de ${fmtKg(total)} kg</div></div>
@@ -58,7 +66,11 @@ export async function render(root, { parts }) {
         <div class="row"><span>Autorización de datos</span><span>${c.productor && c.productor.autorizacion ? 'Sí' : 'No registrada'}</span></div>
       </section>
 
-      <section class="card stack-sm">
+      ${c.factorUGQ === null && !num(cafe.gramos) ? `<section class="card stack-sm">
+        <h2>Análisis físico</h2>
+        <p class="muted">Todavía no tiene análisis físico. Sin él no se puede calcular el factor ni proyectar la trilla.</p>
+        <a class="btn btn-outline-green" href="#/registrar?id=${encodeURIComponent(id)}&paso=3">${icon('funnel', 'ic-sm')}Agregar análisis físico</a>
+      </section>` : `<section class="card stack-sm">
         <h2>Análisis físico <span class="small muted" style="font-family:var(--font-body);font-weight:400">· ${fmtKg(num(cafe.gramos))} g</span></h2>
         <div class="grid-3 small center">
           <div style="background:var(--surface-2);border-radius:.75rem;padding:.5rem .25rem"><div class="muted">Malla 15</div><strong style="font-size:1rem">${fmtKg(num(cafe.m15))} g</strong><div class="muted">pasilla ${fmtKg(num(cafe.p15))} g</div></div>
@@ -69,7 +81,7 @@ export async function render(root, { parts }) {
           <div class="card" style="padding:.625rem .75rem"><div class="small muted">Factor UGQ</div><div class="mid-num" style="font-size:1.5rem">${fmt2(c.factorUGQ)}</div></div>
           <div class="card" style="padding:.625rem .75rem"><div class="small muted">Factor EP</div><div class="mid-num" style="font-size:1.5rem">${fmt2(c.factorEP)}</div></div>
         </div>
-      </section>
+      </section>`}
 
       <section class="card">
         <h2 style="margin-bottom:.375rem">Precio y movimientos</h2>

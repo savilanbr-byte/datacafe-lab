@@ -1,39 +1,46 @@
-// Registrar (o editar) un café en 4 pasos.
+// Registrar un café (2 pasos, solo lo esencial) o editarlo (4 pasos, con los datos complementarios).
 import { data, put, nextCode, uid } from '../db.js';
 import { factor, excelsoGramos, num, fmt2, fmtCOP, precioCarga, nombreProducto, hoyISO, disponibleCafe } from '../calc.js';
 import { esc, icon, field, textarea, seg, bindSeg, toast, go } from '../ui.js';
 import { DEPARTAMENTOS, MUNICIPIOS, VARIEDADES, PROCESOS } from '../listas.js';
 import { nombreProductor } from '../model.js';
 
-const PASOS = ['Productor y finca', 'El café', 'Análisis físico', 'Kilos, bodega y precio'];
+const PASOS_NUEVO = ['Productor y finca', 'El café'];
+const PASOS_EDITAR = ['Productor y finca', 'El café', 'Análisis físico', 'Bodega, precio y otros'];
 
 export async function render(root, { q }) {
   const editId = q.get('id');
   const existente = editId ? data.cafes.find((c) => c.id === editId) : null;
   if (editId && !existente) { root.innerHTML = `<p class="empty">No se encontró el café ${esc(editId)}.</p>`; return; }
+  const PASOS = existente ? PASOS_EDITAR : PASOS_NUEVO;
+  const N = PASOS.length;
 
   const prod = existente ? data.productores.find((p) => p.id === existente.productorId) : null;
-  const v = existente ? {
-    ...existente,
-    variedades: [...(existente.variedades || [])],
-    nombre: (prod && prod.nombre) || '', apellido: (prod && prod.apellido) || '', cedula: (prod && prod.cedula) || '',
-    autorizacion: prod ? !!prod.autorizacion : false,
-  } : {
+  const v = {
     productorId: null, nombre: '', apellido: '', cedula: '', autorizacion: false,
     finca: '', departamento: '', municipio: '', vereda: '',
     variedades: [], proceso: '', tipoFermentacion: '', tiempoFermentacion: '', tipoSecado: '', tiempoSecado: '',
-    gramos: '300', m15: '', p15: '', m14: '', p14: '', m0: '',
+    gramos: '', m15: '', p15: '', m14: '', p14: '', m0: '',
     kgTotales: '', humedad: '', bodegaId: data.bodegas[0] ? data.bodegas[0].id : '', precioKg: '', fechaRegistro: hoyISO(), comentarios: '',
+    ...(existente || {}),
   };
-  let paso = 1;
-  const salir = existente ? `#/cafe/${encodeURIComponent(existente.id)}` : '#/inventario';
+  if (existente) {
+    v.variedades = [...(existente.variedades || [])];
+    Object.assign(v, {
+      nombre: (prod && prod.nombre) || '', apellido: (prod && prod.apellido) || '', cedula: (prod && prod.cedula) || '',
+      autorizacion: prod ? !!prod.autorizacion : false,
+    });
+  }
+  let paso = existente ? Math.min(N, Math.max(1, Number(q.get('paso')) || 1)) : 1;
+  const volver = q.get('volver');
+  const salir = volver ? `#/pendientes?lista=${encodeURIComponent(volver)}` : existente ? `#/cafe/${encodeURIComponent(existente.id)}` : '#/inventario';
 
   root.innerHTML = `
     <header class="topbar">
       <a class="icon-btn" href="${salir}" id="cancelar" aria-label="Cancelar">${icon('close')}</a>
       <div style="flex:1"><h1>${existente ? 'Editar ' + esc(existente.id) : 'Registrar café'}</h1><div class="small muted" id="paso-txt"></div></div>
     </header>
-    <div class="steps" aria-hidden="true">${PASOS.map(() => '<span></span>').join('')}</div>
+    <div class="steps" style="grid-template-columns:repeat(${N},minmax(0,1fr))" aria-hidden="true">${PASOS.map(() => '<span></span>').join('')}</div>
     <form id="form" novalidate>
       <div id="paso" class="stack"></div>
       <div id="errores" class="mt" aria-live="assertive"></div>
@@ -41,12 +48,13 @@ export async function render(root, { q }) {
         <button type="button" class="btn btn-lg" id="atras">Atrás</button>
         <button type="submit" class="btn btn-accent btn-lg grow" id="siguiente">Siguiente</button>
       </div>
+      ${existente ? '<button type="button" class="btn btn-green btn-block mt" id="guardar-ya">Guardar cambios</button>' : ''}
     </form>`;
 
   const $ = (s) => root.querySelector(s);
   const pasoEl = $('#paso');
 
-  root.querySelector('#cancelar').addEventListener('click', (e) => {
+  $('#cancelar').addEventListener('click', (e) => {
     if (!confirm('¿Salir sin guardar los cambios?')) e.preventDefault();
   });
 
@@ -101,13 +109,12 @@ export async function render(root, { q }) {
           ${field('municipio', 'Municipio', v.municipio, 'list="dl-mun" autocomplete="off"')}
         </div>
         <datalist id="dl-dep">${DEPARTAMENTOS.map((d) => `<option value="${esc(d)}"></option>`).join('')}</datalist>
-        <datalist id="dl-mun"></datalist>
-        ${field('vereda', 'Vereda', v.vereda, 'autocomplete="off"')}
-        <label class="check"><input type="checkbox" name="autorizacion" ${v.autorizacion ? 'checked' : ''}> El productor autorizó el uso de sus datos personales (Ley 1581 de 2012)</label>`;
+        <datalist id="dl-mun"></datalist>`;
     }
     if (paso === 2) {
       const todas = [...new Set([...VARIEDADES, ...v.variedades])];
       return `
+        ${field('kgTotales', 'Kilos de pergamino', v.kgTotales, 'inputmode="decimal" required')}
         <div class="field"><div class="label">Variedad <span class="muted" style="font-weight:400">(puedes elegir varias)</span></div>
           <div class="chips" id="vars">${todas.map((x) => `<button type="button" class="chip" data-v="${esc(x)}" aria-pressed="${v.variedades.includes(x)}">${esc(x)}</button>`).join('')}</div>
           <div style="display:flex;gap:.5rem;margin-top:.625rem">
@@ -117,15 +124,20 @@ export async function render(root, { q }) {
           </div>
         </div>
         <div class="field"><div class="label">Proceso</div>${seg('proceso', PROCESOS, v.proceso)}</div>
-        ${textarea('tipoFermentacion', '¿Cómo se fermentó?', v.tipoFermentacion, 'placeholder="Ej.: tanque cerrado, cereza en bolsa sellada"')}
+        ${textarea('tipoFermentacion', 'Tipo de fermentación', v.tipoFermentacion, 'placeholder="Ej.: tanque cerrado, cereza en bolsa sellada"')}
         ${field('tiempoFermentacion', 'Tiempo de fermentación', v.tiempoFermentacion, 'placeholder="Ej.: 36 h"')}
-        ${textarea('tipoSecado', '¿Cómo se secó?', v.tipoSecado, 'placeholder="Ej.: marquesina, cama africana"')}
-        ${field('tiempoSecado', 'Tiempo de secado', v.tiempoSecado, 'placeholder="Ej.: 15 días"')}`;
+        ${textarea('tipoSecado', 'Tipo de secado', v.tipoSecado, 'placeholder="Ej.: marquesina, cama africana"')}
+        ${field('tiempoSecado', 'Tiempo de secado', v.tiempoSecado, 'placeholder="Ej.: 15 días"')}
+        <section class="card stack-sm">
+          <div class="small muted">Así quedará guardado</div>
+          <div class="item-name" id="nombre-prod"></div>
+          ${existente ? '' : '<div class="small muted">El análisis físico, el precio y la bodega se pueden agregar después desde la ficha del café.</div>'}
+        </section>`;
     }
     if (paso === 3) {
       return `
         <p class="muted">Anota los gramos de cada malla. Los factores se calculan solos.</p>
-        ${field('gramos', 'Gramos de análisis', v.gramos, 'inputmode="decimal"')}
+        ${field('gramos', 'Gramos de análisis', v.gramos, 'inputmode="decimal" placeholder="Ej.: 300"')}
         <div class="grid-2">
           ${field('m15', 'Malla 15', v.m15, 'inputmode="decimal"')}
           ${field('p15', 'Pasilla malla 15', v.p15, 'inputmode="decimal"')}
@@ -141,33 +153,33 @@ export async function render(root, { q }) {
         </section>`;
     }
     return `
-      <div class="grid-2">
-        ${field('kgTotales', 'Kilos de pergamino', v.kgTotales, 'inputmode="decimal" required')}
-        ${field('humedad', 'Humedad (%)', v.humedad, 'inputmode="decimal"')}
-      </div>
-      <div class="field"><div class="label">¿En qué bodega queda?</div>
+      <div class="field"><div class="label">¿En qué bodega está?</div>
         ${seg('bodegaId', data.bodegas.map((b) => [b.id, b.nombre, ' ']), v.bodegaId, 'wrap')}
         <div class="hint">Puedes crear o renombrar bodegas en Ajustes.</div>
       </div>
-      ${field('precioKg', 'Precio por kilo (COP)', v.precioKg, 'inputmode="numeric"')}
+      <div class="grid-2">
+        ${field('precioKg', 'Precio por kilo (COP)', v.precioKg, 'inputmode="numeric"')}
+        ${field('humedad', 'Humedad (%)', v.humedad, 'inputmode="decimal"')}
+      </div>
+      <div class="row plain"><span>Precio carga (125 kg)</span><strong id="carga">—</strong></div>
+      ${field('vereda', 'Vereda', v.vereda, 'autocomplete="off"')}
       ${field('fechaRegistro', 'Fecha de registro', v.fechaRegistro, 'type="date"')}
-      ${textarea('comentarios', 'Comentarios', v.comentarios)}
-      <section class="card stack-sm">
-        <div class="small muted">Así quedará guardado</div>
-        <div class="item-name" id="nombre-prod"></div>
-        <div class="row plain"><span>Precio carga (125 kg)</span><strong id="carga">—</strong></div>
-      </section>`;
+      <label class="check"><input type="checkbox" name="autorizacion" ${v.autorizacion ? 'checked' : ''}> El productor autorizó el uso de sus datos personales (Ley 1581 de 2012)</label>
+      ${textarea('comentarios', 'Comentarios', v.comentarios)}`;
   }
 
   function pintar() {
-    $('#paso-txt').textContent = `Paso ${paso} de 4 · ${PASOS[paso - 1]}`;
+    $('#paso-txt').textContent = `Paso ${paso} de ${N} · ${PASOS[paso - 1]}`;
     root.querySelectorAll('.steps span').forEach((s, i) => s.classList.toggle('on', i < paso));
     pasoEl.innerHTML = htmlPaso();
     $('#errores').innerHTML = '';
     $('#atras').hidden = paso === 1;
-    $('#siguiente').textContent = paso === 4 ? 'Guardar café' : 'Siguiente';
-    $('#siguiente').classList.toggle('btn-green', paso === 4);
-    $('#siguiente').classList.toggle('btn-accent', paso !== 4);
+    const ultimo = paso === N;
+    $('#siguiente').textContent = ultimo ? (existente ? 'Guardar cambios' : 'Guardar café') : 'Siguiente';
+    $('#siguiente').classList.toggle('btn-green', ultimo);
+    $('#siguiente').classList.toggle('btn-accent', !ultimo);
+    const ya = $('#guardar-ya');
+    if (ya) ya.hidden = ultimo;
 
     if (paso === 1) {
       pintarMunicipios();
@@ -176,9 +188,9 @@ export async function render(root, { q }) {
         const b = e.target.closest('button[data-id]');
         if (!b) return;
         const p = data.productores.find((x) => x.id === b.dataset.id);
-        const ultimo = [...data.cafes].filter((c) => c.productorId === p.id).sort((a, b2) => (a.id < b2.id ? 1 : -1))[0];
+        const ult = [...data.cafes].filter((c) => c.productorId === p.id).sort((a, b2) => (a.id < b2.id ? 1 : -1))[0];
         Object.assign(v, { productorId: p.id, nombre: p.nombre || '', apellido: p.apellido || '', cedula: p.cedula || '', autorizacion: !!p.autorizacion });
-        if (ultimo) Object.assign(v, { finca: ultimo.finca, departamento: ultimo.departamento, municipio: ultimo.municipio, vereda: ultimo.vereda });
+        if (ult) Object.assign(v, { finca: ult.finca || '', departamento: ult.departamento || '', municipio: ult.municipio || '', vereda: ult.vereda || '' });
         pintar();
       });
     }
@@ -189,6 +201,7 @@ export async function render(root, { q }) {
         const x = b.dataset.v;
         v.variedades = v.variedades.includes(x) ? v.variedades.filter((y) => y !== x) : [...v.variedades, x];
         b.setAttribute('aria-pressed', String(v.variedades.includes(x)));
+        actualizarCalculos();
       });
       $('#add-var').addEventListener('click', () => {
         const x = $('#otra-var').value.trim();
@@ -196,41 +209,40 @@ export async function render(root, { q }) {
         if (!v.variedades.includes(x)) v.variedades.push(x);
         pintar();
       });
-      bindSeg(root, 'proceso', (val) => { v.proceso = val; });
+      bindSeg(root, 'proceso', (val) => { v.proceso = val; actualizarCalculos(); });
     }
     if (paso === 4) bindSeg(root, 'bodegaId', (val) => { v.bodegaId = val; pintar(); });
     actualizarCalculos();
   }
 
-  function validar() {
+  // Valida un paso; los pasos 1 y 2 tienen los datos obligatorios.
+  function validar(p) {
     const err = [];
-    if (paso === 1) {
-      if (!v.nombre.trim()) err.push('Escribe el nombre del productor.');
-      if (!v.finca.trim()) err.push('Escribe el nombre de la finca.');
+    if (p === 1) {
+      if (!String(v.nombre).trim()) err.push('Escribe el nombre del productor.');
+      if (!String(v.finca).trim()) err.push('Escribe el nombre de la finca.');
     }
-    if (paso === 2) {
-      if (!v.variedades.length) err.push('Elige al menos una variedad.');
-      if (!v.proceso) err.push('Elige el proceso.');
-    }
-    if (paso === 4) {
+    if (p === 2) {
       if (!(num(v.kgTotales) > 0)) err.push('Escribe los kilos de pergamino.');
-      if (existente) {
+      else if (existente) {
         const usados = num(existente.kgTotales) - disponibleCafe(existente, data.lotes, data.ventas);
         if (num(v.kgTotales) < usados) err.push(`Ya se usaron ${usados} kg de este café en trillas o ventas; los kilos no pueden ser menos.`);
       }
-      if (!v.bodegaId) err.push('Elige la bodega.');
+      if (!v.variedades.length) err.push('Elige al menos una variedad.');
+      if (!v.proceso) err.push('Elige el proceso.');
     }
     return err;
   }
 
   async function guardar() {
     // Productor: usa el elegido, o busca uno igual por cédula o nombre, o crea uno nuevo.
+    const t = (x) => String(x ?? '').trim();
     let p = v.productorId ? data.productores.find((x) => x.id === v.productorId) : null;
-    if (!p && v.cedula.trim()) p = data.productores.find((x) => x.cedula && x.cedula.trim() === v.cedula.trim());
-    if (!p) p = data.productores.find((x) => (x.nombre || '').trim().toLowerCase() === v.nombre.trim().toLowerCase() && (x.apellido || '').trim().toLowerCase() === v.apellido.trim().toLowerCase());
+    if (!p && t(v.cedula)) p = data.productores.find((x) => x.cedula && t(x.cedula) === t(v.cedula));
+    if (!p) p = data.productores.find((x) => t(x.nombre).toLowerCase() === t(v.nombre).toLowerCase() && t(x.apellido).toLowerCase() === t(v.apellido).toLowerCase());
     p = await put('productores', {
       ...(p || { id: uid('p') }),
-      nombre: v.nombre.trim(), apellido: v.apellido.trim(), cedula: v.cedula.trim(),
+      nombre: t(v.nombre), apellido: t(v.apellido), cedula: t(v.cedula),
       autorizacion: !!v.autorizacion,
       fechaAutorizacion: v.autorizacion ? (p && p.fechaAutorizacion) || hoyISO() : null,
     });
@@ -242,18 +254,32 @@ export async function render(root, { q }) {
     if (!existente) cafe.creado = new Date().toISOString();
     await put('cafes', cafe);
     toast(existente ? 'Cambios guardados' : `Café ${id} registrado`);
-    go(`#/cafe/${encodeURIComponent(id)}`);
+    go(volver ? `#/pendientes?lista=${encodeURIComponent(volver)}` : `#/cafe/${encodeURIComponent(id)}`);
+  }
+
+  async function intentarGuardar() {
+    for (const p of [1, 2]) {
+      const err = validar(p);
+      if (err.length) {
+        if (paso !== p) { paso = p; pintar(); }
+        $('#errores').innerHTML = `<div class="alert" role="alert">${err.map(esc).join('<br>')}</div>`;
+        return;
+      }
+    }
+    $('#siguiente').disabled = true;
+    try { await guardar(); } catch (er) { $('#siguiente').disabled = false; $('#errores').innerHTML = `<div class="alert">No se pudo guardar: ${esc(er.message)}</div>`; }
   }
 
   $('#form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const err = validar();
+    const err = validar(paso);
     if (err.length) { $('#errores').innerHTML = `<div class="alert" role="alert">${err.map(esc).join('<br>')}</div>`; return; }
-    if (paso < 4) { paso++; pintar(); window.scrollTo(0, 0); return; }
-    $('#siguiente').disabled = true;
-    try { await guardar(); } catch (er) { $('#siguiente').disabled = false; $('#errores').innerHTML = `<div class="alert">No se pudo guardar: ${esc(er.message)}</div>`; }
+    if (paso < N) { paso++; pintar(); window.scrollTo(0, 0); return; }
+    intentarGuardar();
   });
   $('#atras').addEventListener('click', () => { paso--; pintar(); window.scrollTo(0, 0); });
+  const ya = $('#guardar-ya');
+  if (ya) ya.addEventListener('click', intentarGuardar);
 
   pintar();
 }

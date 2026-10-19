@@ -2,7 +2,7 @@
 
 App para hacer seguimiento a un café en post-cosecha: **inventario de pergamino, catación, trilla y ventas**. Está pensada para productores y comercializadoras, con botones grandes y lenguaje sencillo. **Funciona sin internet.**
 
-Es un prototipo de **Sancocho Glorioso** (versión 0.1.0).
+Es un prototipo de **Sancocho Glorioso** (versión 0.2.0).
 
 👉 **Probar la app:** https://savilanbr-byte.github.io/datacafe-lab/
 
@@ -18,9 +18,10 @@ Para conocerla sin escribir nada: en Inicio toca **Cargar datos de ejemplo**. De
 
 | Pantalla | Qué permite |
 |---|---|
-| **Inicio** | Tablero con kilos disponibles de pergamino, excelso y pasilla; kilos por bodega y por variedad; precios promedio. |
+| **Inicio** | Tablero con kilos disponibles de pergamino, excelso y pasilla; pendientes; kilos por bodega y por variedad; precios promedio. |
+| **Pendientes** | Tres listas que se actualizan solas con los cafés en bodega a los que les falta **análisis físico**, **catación** o **precio**. Cada café tiene un botón que abre justo lo que le falta y, al guardar, vuelve a la lista. |
 | **Inventario** | Lista de cafés con buscador y filtro por bodega. |
-| **Registrar café** | 4 pasos: productor y finca → el café → análisis físico (los factores se calculan mientras escribes) → kilos, bodega y precio. |
+| **Registrar café** | 2 pasos, solo lo esencial: productor (nombre, apellido, cédula), finca, departamento y municipio → kg de pergamino, variedad, proceso, tipo y tiempo de fermentación, tipo y tiempo de secado. El análisis físico (con los factores calculados en vivo), la bodega, el precio, la humedad, la vereda y la autorización de datos se completan después con **Editar**. Los cafés nuevos quedan en la primera bodega mientras no se cambie. |
 | **Ficha del café** | Todo lo del café: perfil en taza, cataciones, proceso, análisis físico, movimientos. Se comparte por WhatsApp. |
 | **Catación** | Formato SCA: atributos con − y +, tazas, defectos, descriptores. El puntaje se calcula solo. Cada catador usa su celular. |
 | **Trilla** | Lotes que juntan uno o varios cafés. La preparación (UGQ o EP) se elige para todo el lote. Calcula el excelso proyectado y, cuando se anota el resultado, el factor real. |

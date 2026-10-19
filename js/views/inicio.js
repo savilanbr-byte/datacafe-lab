@@ -1,4 +1,4 @@
-import { tablero } from '../model.js';
+import { tablero, pendientes } from '../model.js';
 import { fmtKg, fmtCOP } from '../calc.js';
 import { esc, icon, toast } from '../ui.js';
 import { cargarEjemplo } from '../seed.js';
@@ -62,6 +62,19 @@ export async function render(root) {
           <div class="small muted">${t.nLotesPasilla} ${t.nLotesPasilla === 1 ? 'lote' : 'lotes'}</div>
         </a>
       </div>
+
+      ${(() => {
+        const ps = pendientes();
+        const total = ps.reduce((s, l) => s + l.cafes.length, 0);
+        return `<section class="card">
+          <div class="card-title" style="margin-bottom:.375rem">${icon('check')}<h2>Pendientes</h2></div>
+          ${total === 0 ? '<p class="muted">Todo al día: los cafés en bodega tienen análisis, catación y precio.</p>' : ps.map((l) => `
+            <a class="row plain" href="#/pendientes?lista=${l.id}" style="align-items:center;text-decoration:none;color:inherit;min-height:2.75rem">
+              <span style="display:flex;align-items:center;gap:.625rem">${icon(l.icono, 'ic-sm')}${esc(l.falta)}</span>
+              <span style="display:flex;align-items:center;gap:.375rem">${l.cafes.length ? `<span class="badge warn">${l.cafes.length}</span>` : '<span class="badge">0</span>'}${icon('chevron', 'ic-sm')}</span>
+            </a>`).join('')}
+        </section>`;
+      })()}
 
       <section class="card">
         <div class="card-title">${icon('warehouse')}<h2>Bodegas</h2></div>

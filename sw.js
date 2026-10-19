@@ -1,13 +1,13 @@
 // Service worker: guarda la app en el celular para que abra sin internet.
 // Al publicar una versión nueva, cambia CACHE (y VERSION en js/version.js).
-const CACHE = 'datacafe-lab-v0.1.0';
+const CACHE = 'datacafe-lab-v0.2.0';
 const FONTS = 'datacafe-fonts-v1';
 
 const APP = [
   './', './index.html', './manifest.webmanifest', './css/styles.css',
   './js/app.js', './js/version.js', './js/db.js', './js/calc.js', './js/ui.js', './js/model.js', './js/listas.js', './js/seed.js',
   './js/views/inicio.js', './js/views/inventario.js', './js/views/registrar.js', './js/views/ficha.js', './js/views/catacion.js',
-  './js/views/trilla.js', './js/views/lote.js', './js/views/ventas.js', './js/views/ajustes.js',
+  './js/views/trilla.js', './js/views/lote.js', './js/views/ventas.js', './js/views/ajustes.js', './js/views/pendientes.js',
   './icons/favicon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png',
 ];
 

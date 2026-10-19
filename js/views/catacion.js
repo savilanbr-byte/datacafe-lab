@@ -20,7 +20,8 @@ export async function render(root, { q }) {
   const usados = data.cataciones.flatMap((x) => x.descriptores || []);
   let opciones = [...new Set([...DESCRIPTORES, ...usados])];
 
-  const volver = fijo ? (tipo === 'lote' ? `#/lote/${encodeURIComponent(ref)}` : `#/cafe/${encodeURIComponent(ref)}`) : null;
+  const volverA = q.get('volver') ? `#/pendientes?lista=${encodeURIComponent(q.get('volver'))}` : null;
+  const volver = volverA || (fijo ? (tipo === 'lote' ? `#/lote/${encodeURIComponent(ref)}` : `#/cafe/${encodeURIComponent(ref)}`) : null);
 
   function opcionesRef() {
     if (tipo === 'lote') return lotesOrdenados().map((l) => [l.id, l.nombre ? `${l.id} · ${l.nombre}` : l.id]);
@@ -181,7 +182,7 @@ export async function render(root, { q }) {
     ultimoCatador = c.catador;
     await put('cataciones', { id: uid('k'), tipo, ref, ...c, puntaje: puntajeCatacion(c) });
     toast(`Catación guardada: ${fmt2(puntajeCatacion(c))} puntos`);
-    go(tipo === 'lote' ? `#/lote/${encodeURIComponent(ref)}` : `#/cafe/${encodeURIComponent(ref)}`);
+    go(volverA || (tipo === 'lote' ? `#/lote/${encodeURIComponent(ref)}` : `#/cafe/${encodeURIComponent(ref)}`));
   });
 
   pintarDesc();

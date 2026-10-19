@@ -10,6 +10,7 @@ import * as trilla from './views/trilla.js';
 import * as lote from './views/lote.js';
 import * as ventas from './views/ventas.js';
 import * as ajustes from './views/ajustes.js';
+import * as pendientes from './views/pendientes.js';
 
 
 // ruta -> [vista, pestaña activa del menú, mostrar menú]
@@ -23,6 +24,7 @@ const ROUTES = {
   lote: [lote, 'trilla', true],
   ventas: [ventas, 'ventas', true],
   ajustes: [ajustes, 'inicio', true],
+  pendientes: [pendientes, 'inicio', true],
 };
 
 const app = document.getElementById('app');

@@ -61,6 +61,26 @@ export function lotesOrdenados() {
   return [...data.lotes].sort((a, b) => (a.id < b.id ? 1 : -1));
 }
 
+// ---------- Pendientes ----------
+// Solo cuentan los cafés que todavía tienen kilos en bodega.
+export const LISTAS_PENDIENTES = [
+  { id: 'analisis', titulo: 'Análisis físico', falta: 'Sin análisis físico', accion: 'Agregar análisis', icono: 'funnel',
+    pendiente: (c) => c.factorUGQ === null, href: (c) => `#/registrar?id=${encodeURIComponent(c.cafe.id)}&paso=3` },
+  { id: 'catacion', titulo: 'Catación', falta: 'Sin catar', accion: 'Catar', icono: 'cup-plain',
+    pendiente: (c) => c.cataciones.length === 0, href: (c) => `#/catacion?tipo=pergamino&ref=${encodeURIComponent(c.cafe.id)}` },
+  { id: 'precio', titulo: 'Precio', falta: 'Sin precio', accion: 'Poner precio', icono: 'cart',
+    pendiente: (c) => !(num(c.cafe.precioKg) > 0), href: (c) => `#/registrar?id=${encodeURIComponent(c.cafe.id)}&paso=4` },
+];
+
+export function pendientes() {
+  const activos = cafesOrdenados().map(cafeInfo).filter((c) => c.disponible > 0.001);
+  return LISTAS_PENDIENTES.map((l) => ({ ...l, cafes: activos.filter(l.pendiente) }));
+}
+
+export function pendientesDe(info) {
+  return LISTAS_PENDIENTES.filter((l) => l.pendiente(info));
+}
+
 /** Datos del tablero de Inicio. */
 export function tablero() {
   const cafes = data.cafes.map(cafeInfo);
